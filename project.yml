@@ -14,8 +14,10 @@ packages:
 settings:
   base:
     SWIFT_VERSION: "6.0"
-    # Pas de compte développeur requis pour compiler en simulateur.
-    CODE_SIGNING_ALLOWED: NO
+    # Signature automatique : nécessaire pour installer sur un vrai Apple TV.
+    # En simulateur elle est simplement ignorée.
+    DEVELOPMENT_TEAM: 46C337T7YN
+    CODE_SIGN_STYLE: Automatic
 
 targets:
   SeestarTV:

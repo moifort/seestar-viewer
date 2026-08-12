@@ -19,14 +19,13 @@ public struct ViewerScreen: View {
 
     public var body: some View {
         ZStack {
-            Color.black.ignoresSafeArea()
+            Color.black
 
             if let frame = session.model.displayedFrame {
                 Image(decorative: frame.image, scale: 1, orientation: Self.orientation)
                     .resizable()
                     .scaledToFit()
                     .antiBurnInDrift()
-                    .ignoresSafeArea()
                     .transition(.opacity)
             } else {
                 WaitingView(status: session.model.status, host: session.resolvedHost)
@@ -38,6 +37,9 @@ public struct ViewerScreen: View {
                 hasImage: session.model.displayedFrame != nil
             )
         }
+        // Sur la pile entière, et non sur l'image seule : sinon la zone de
+        // sécurité tvOS rogne l'écran et l'image 16/9 ne remplit plus la dalle.
+        .ignoresSafeArea()
         .animation(.easeInOut(duration: 0.4), value: session.model.displayedFrame?.width)
         .onAppear {
             setIdleTimerDisabled(true)
