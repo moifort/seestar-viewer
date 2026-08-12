@@ -36,7 +36,9 @@ public struct ViewerScreen<RTSPPlayer: View>: View {
                     .transition(.opacity)
             } else if let stream = session.rtspStreamURL {
                 // Modes Paysage et Système solaire : l'image ne passe que par là.
-                rtspPlayer(stream)
+                // Le flux est en portrait 1080x1920 comme le capteur, il subit
+                // donc la même rotation que les trames décodées.
+                PlatformRotated { rtspPlayer(stream) }
                     .antiBurnInDrift()
                     .transition(.opacity)
             } else {
@@ -90,6 +92,32 @@ public struct ViewerScreen<RTSPPlayer: View>: View {
     private func setIdleTimerDisabled(_ disabled: Bool) {
         #if canImport(UIKit)
         UIApplication.shared.isIdleTimerDisabled = disabled
+        #endif
+    }
+}
+
+/// Applique au contenu la rotation propre à la plateforme.
+///
+/// Une image portrait tournée d'un quart de tour donne exactement du 16/9 :
+/// elle remplit la dalle d'un téléviseur sans bande noire ni recadrage. Sur
+/// iPhone et iPad, le portrait natif convient déjà, on ne touche à rien.
+///
+/// La permutation largeur/hauteur avant rotation est indispensable : sans
+/// elle, le contenu tourne mais garde son cadre d'origine et se retrouve
+/// rogné dans les coins.
+struct PlatformRotated<Content: View>: View {
+    @ViewBuilder var content: Content
+
+    var body: some View {
+        #if os(tvOS)
+        GeometryReader { geometry in
+            content
+                .frame(width: geometry.size.height, height: geometry.size.width)
+                .rotationEffect(.degrees(90))
+                .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
+        }
+        #else
+        content
         #endif
     }
 }
