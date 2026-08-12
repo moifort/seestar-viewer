@@ -30,16 +30,18 @@ public struct ViewerScreen<RTSPPlayer: View>: View {
             Color.black
 
             if let frame = session.model.displayedFrame {
-                Image(decorative: frame.image, scale: 1, orientation: Self.orientation)
-                    .resizable()
-                    .scaledToFit()
-                    .antiBurnInDrift()
-                    .transition(.opacity)
+                PortraitFitted {
+                    Image(decorative: frame.image, scale: 1)
+                        .resizable()
+                        .scaledToFit()
+                }
+                .antiBurnInDrift()
+                .transition(.opacity)
             } else if let stream = session.rtspStreamURL {
                 // Modes Paysage et Système solaire : l'image ne passe que par là.
-                // Le flux est en portrait 1080x1920 comme le capteur, il subit
-                // donc la même rotation que les trames décodées.
-                PlatformRotated { rtspPlayer(stream) }
+                // Le flux est en portrait 1080x1920 comme le capteur, il suit
+                // donc la même règle d'orientation que les trames décodées.
+                PortraitFitted { rtspPlayer(stream) }
                     .antiBurnInDrift()
                     .transition(.opacity)
             } else {
@@ -97,17 +99,6 @@ public struct ViewerScreen<RTSPPlayer: View>: View {
         return session.model.status
     }
 
-    /// Dans le ciel il n'y a pas de haut : on tourne librement l'image portrait
-    /// du capteur pour épouser l'écran.
-    private static var orientation: Image.Orientation {
-        #if os(tvOS)
-        // 1080x1920 devient 1920x1080, soit exactement du 16/9.
-        return .right
-        #else
-        // Sur iPhone et iPad, le portrait natif tombe déjà dans le bon sens.
-        return .up
-        #endif
-    }
 
     private func setIdleTimerDisabled(_ disabled: Bool) {
         #if canImport(UIKit)
@@ -116,31 +107,6 @@ public struct ViewerScreen<RTSPPlayer: View>: View {
     }
 }
 
-/// Applique au contenu la rotation propre à la plateforme.
-///
-/// Une image portrait tournée d'un quart de tour donne exactement du 16/9 :
-/// elle remplit la dalle d'un téléviseur sans bande noire ni recadrage. Sur
-/// iPhone et iPad, le portrait natif convient déjà, on ne touche à rien.
-///
-/// La permutation largeur/hauteur avant rotation est indispensable : sans
-/// elle, le contenu tourne mais garde son cadre d'origine et se retrouve
-/// rogné dans les coins.
-struct PlatformRotated<Content: View>: View {
-    @ViewBuilder var content: Content
-
-    var body: some View {
-        #if os(tvOS)
-        GeometryReader { geometry in
-            content
-                .frame(width: geometry.size.height, height: geometry.size.width)
-                .rotationEffect(.degrees(90))
-                .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
-        }
-        #else
-        content
-        #endif
-    }
-}
 
 /// Écran d'attente. Le message `only available for continuous exposure` n'est
 /// pas une erreur : le télescope est joignable, il n'expose simplement pas.

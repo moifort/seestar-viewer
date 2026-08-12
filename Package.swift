@@ -28,7 +28,7 @@ let package = Package(
         .executableTarget(name: "SeestarProbe", dependencies: ["SeestarKit"]),
         .testTarget(
             name: "SeestarKitTests",
-            dependencies: ["SeestarKit"],
+            dependencies: ["SeestarKit", "SeestarUI"],
             resources: [.copy("Fixtures")]
         )
     ]
