@@ -1,0 +1,29 @@
+/* Écran d'attente : titres. */
+"Looking for your Seestar" = "Recherche de votre Seestar";
+"Telescope connected" = "Télescope connecté";
+"Telescope already busy" = "Télescope déjà occupé";
+"Connection lost" = "Connexion perdue";
+"Waiting for an image" = "En attente d'une image";
+
+/* Écran d'attente : ce qu'il faut faire, sous le titre. */
+"Make sure the Seestar is powered on and joined to the same Wi-Fi network." = "Vérifiez que le Seestar est allumé et connecté au même réseau Wi-Fi.";
+"Open the Seestar app." = "Ouvrez l'application Seestar.";
+"The Seestar allows only a handful of viewers on its image channel, and the slot is taken. Close another device connected to the telescope, then try again." = "Le Seestar n'accepte qu'une poignée de spectateurs sur son canal d'images, et la place est prise. Fermez un autre appareil connecté au télescope, puis réessayez.";
+"Reconnecting automatically." = "Reconnexion automatique en cours.";
+
+/* Barre de télémétrie : état, en un mot ou deux. La place est comptée. */
+"Searching" = "Recherche";
+"Idle" = "En veille";
+"Live" = "En direct";
+"Live view" = "Vue en direct";
+"Stacking" = "Empilement";
+"Busy" = "Occupé";
+"Disconnected" = "Déconnecté";
+
+/* Réglages. */
+"Settings" = "Réglages";
+"Apply" = "Appliquer";
+"Seestar address" = "Adresse du Seestar";
+"Leave empty to discover the telescope automatically via seestar.local. Enter an IP address if it is not found." = "Laissez vide pour découvrir le télescope automatiquement via seestar.local. Saisissez une adresse IP s'il n'est pas trouvé.";
+"Current connection" = "Connexion actuelle";
+"Host" = "Hôte";

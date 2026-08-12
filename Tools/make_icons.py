@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Fabrique les catalogues d'icones iOS et tvOS a partir d'une seule image source.
 
-    python3 Tools/make_icons.py Tools/icon-source.png
+    python3 Tools/make_icons.py Tools/icon-source.png [Tools/banner-source.png]
 
 iOS se contente d'un carre de 1024. tvOS est plus exigeant : il veut du 5:3,
 decompose en couches superposees pour l'effet de parallaxe, plus une banniere
@@ -34,20 +34,44 @@ def fresh(path):
 
 
 def split_layers(source: Image.Image):
-    """Separe le croissant lumineux du ciel, par seuil de luminance."""
+    """Separe le sujet du ciel, par ecart au fond estime.
+
+    Un simple seuil de luminance ne marche que pour un sujet nettement plus
+    clair que le fond. Il echoue sur du verre pale pose sur un degrade a peine
+    plus sombre. On estime donc le fond par un flou tres large, puis on garde
+    ce qui s'en ecarte : la methode tient quel que soit le contraste.
+    """
     rgb = np.asarray(source.convert("RGB")).astype(np.float32)
-    luminance = rgb.sum(axis=2)
-    # Seuil relatif : le croissant et son halo sont nettement plus clairs que
-    # le ciel, quel que soit le rendu exact de l'image source.
-    threshold = luminance.min() + 0.30 * (luminance.max() - luminance.min())
-    alpha = np.clip((luminance - threshold) / max(luminance.max() - threshold, 1), 0, 1)
+    radius = max(source.size) // 8
+    background = np.asarray(
+        source.convert("RGB").filter(ImageFilter.GaussianBlur(radius))
+    ).astype(np.float32)
+
+    def normalise(values):
+        return np.clip(values / max(np.percentile(values, 99.5), 1e-6), 0, 1)
+
+    # Deux lectures possibles du sujet, selon l'image.
+    by_contrast = normalise(np.abs(rgb - background).sum(axis=2))
+    # Un ciel est bleu, un appareil gris ou noir est neutre : l'ecart de teinte
+    # separe ce que la luminosite seule ne distingue pas.
+    blueness = rgb[:, :, 2] - (rgb[:, :, 0] + rgb[:, :, 1]) / 2
+    by_hue = normalise(np.abs(blueness - np.median(blueness)))
+
+    # On retient celle qui detache une part plausible de l'image : un masque
+    # quasi vide ou quasi plein signale que le critere ne s'applique pas ici.
+    def plausible(mask):
+        return 0.06 <= (mask > 0.5).mean() <= 0.65
+
+    alpha = by_contrast if plausible(by_contrast) else (
+        by_hue if plausible(by_hue) else np.maximum(by_contrast, by_hue))
+    # Adoucit les bords sans ronger le sujet.
+    alpha = np.asarray(
+        Image.fromarray((alpha * 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(3))
+    ).astype(np.float32) / 255
 
     front = np.dstack([rgb, alpha * 255]).astype(np.uint8)
-    front_img = Image.fromarray(front, "RGBA")
-
-    # Le ciel seul : on efface le croissant en etalant les teintes voisines.
-    sky = source.convert("RGB").filter(ImageFilter.GaussianBlur(90))
-    return front_img, sky
+    sky = source.convert("RGB").filter(ImageFilter.GaussianBlur(radius))
+    return Image.fromarray(front, "RGBA"), sky
 
 
 def sky_canvas(sky: Image.Image, width: int, height: int) -> Image.Image:
@@ -105,7 +129,30 @@ def build_ios(front, sky, source):
     print("iOS  : AppIcon 1024x1024")
 
 
-def build_tvos(front, sky):
+def banner_canvas(source: Image.Image, width: int, height: int) -> Image.Image:
+    """Pose une image carree au centre d'une banniere large.
+
+    Un simple recadrage amputerait les extremites de la nebuleuse, qui sont
+    justement ce qui la rend reconnaissable. On l'ajuste donc en hauteur et on
+    laisse le ciel occuper les cotes.
+    """
+    sky = source.convert("RGB").filter(ImageFilter.GaussianBlur(120))
+    canvas = sky_canvas(sky, width, height)
+
+    target = int(height * 0.96)
+    subject = source.convert("RGB").resize((target, target), Image.LANCZOS)
+
+    # Fondu circulaire sur les bords du sujet, pour qu'il se marie au ciel.
+    mask = Image.new("L", (target, target), 0)
+    inner = Image.new("L", (target, target), 255)
+    mask.paste(inner, (0, 0))
+    mask = mask.filter(ImageFilter.GaussianBlur(target // 12))
+
+    canvas.paste(subject, ((width - target) // 2, (height - target) // 2), mask)
+    return canvas
+
+
+def build_tvos(front, sky, banner=None):
     catalog = fresh(os.path.join(ROOT, "Apps/SeestarTV/Assets.xcassets"))
     write_json(os.path.join(catalog, "Contents.json"), {"info": INFO})
     brand = fresh(os.path.join(catalog, "App Icon & Top Shelf Image.brandassets"))
@@ -128,7 +175,11 @@ def build_tvos(front, sky):
 
     for name, (w, h) in {"Top Shelf Image": (1920, 720),
                          "Top Shelf Image Wide": (2320, 720)}.items():
-        imageset(os.path.join(brand, f"{name}.imageset"), compose(front, sky, w, h, 0.55))
+        if banner is not None:
+            image = banner_canvas(banner, w, h)
+        else:
+            image = compose(front, sky, w, h, 0.55)
+        imageset(os.path.join(brand, f"{name}.imageset"), image)
         print(f"tvOS : {name} {w}x{h}")
 
     write_json(os.path.join(brand, "Contents.json"), {
@@ -151,9 +202,10 @@ def main():
         print(__doc__)
         return 1
     source = Image.open(sys.argv[1]).convert("RGB")
+    banner = Image.open(sys.argv[2]).convert("RGB") if len(sys.argv) > 2 else None
     front, sky = split_layers(source)
     build_ios(front, sky, source)
-    build_tvos(front, sky)
+    build_tvos(front, sky, banner)
     print("\nCatalogues ecrits dans Apps/SeestarViewer et Apps/SeestarTV.")
     return 0
 

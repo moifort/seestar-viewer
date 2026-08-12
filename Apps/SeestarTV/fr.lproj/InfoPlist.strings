@@ -1,0 +1,7 @@
+/* Sans cette autorisation, toute connexion au réseau local échoue
+   silencieusement : le télescope semble simplement injoignable. */
+"NSLocalNetworkUsageDescription" = "Seestar Companion se connecte à votre télescope sur le réseau local pour en afficher les images.";
+
+/* Le lever et le coucher du soleil dépendent du lieu. Refuser
+   l'autorisation ne retire que ces deux horaires de la barre. */
+"NSLocationWhenInUseUsageDescription" = "Seestar Companion utilise votre position approximative pour afficher les heures de coucher et de lever du soleil de cette nuit.";

@@ -47,6 +47,11 @@ targets:
         NSLocalNetworkUsageDescription: >-
           Seestar Companion connects to your telescope on the local network
           to display its images.
+        # Le lever et le coucher du soleil dépendent du lieu. Refuser
+        # l'autorisation ne retire que ces deux horaires de la barre.
+        NSLocationWhenInUseUsageDescription: >-
+          Seestar Companion uses your approximate location to show tonight's
+          sunset and sunrise times.
 
   SeestarViewer:
     type: application
@@ -70,6 +75,9 @@ targets:
         NSLocalNetworkUsageDescription: >-
           Seestar Companion connects to your telescope on the local network
           to display its images.
+        NSLocationWhenInUseUsageDescription: >-
+          Seestar Companion uses your approximate location to show tonight's
+          sunset and sunrise times.
         UILaunchScreen: {}
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait

@@ -176,26 +176,34 @@ struct WaitingView: View {
 
     private var title: String {
         switch status {
-        case .searching: return "Looking for your Seestar"
-        case .waitingForExposure: return "Telescope connected"
-        case .tooManyConnections: return "Telescope already busy"
-        case .disconnected: return "Connection lost"
-        case .live, .stacking, .streaming: return "Waiting for an image"
+        case .searching: return localized("Looking for your Seestar")
+        case .waitingForExposure: return localized("Telescope connected")
+        case .tooManyConnections: return localized("Telescope already busy")
+        case .disconnected: return localized("Connection lost")
+        case .live, .stacking, .streaming: return localized("Waiting for an image")
         }
     }
 
+    /// Les phrases longues s'écrivent en littéral multiligne terminé par `\`,
+    /// qui recolle les morceaux sans y glisser de retour à la ligne : la clé de
+    /// traduction reste une phrase d'un seul tenant.
     private var detail: String {
         switch status {
         case .searching:
-            return "Make sure the Seestar is powered on and joined to the same Wi-Fi network."
+            return localized("""
+                Make sure the Seestar is powered on and joined to the same \
+                Wi-Fi network.
+                """)
         case .waitingForExposure:
-            return "Open the Seestar app."
+            return localized("Open the Seestar app.")
         case .tooManyConnections:
-            return "The Seestar allows only a handful of viewers on its image "
-                + "channel, and the slot is taken. Close another device connected "
-                + "to the telescope, then try again."
+            return localized("""
+                The Seestar allows only a handful of viewers on its image \
+                channel, and the slot is taken. Close another device connected \
+                to the telescope, then try again.
+                """)
         case .disconnected:
-            return "Reconnecting automatically."
+            return localized("Reconnecting automatically.")
         case .live, .stacking, .streaming:
             return ""
         }

@@ -17,24 +17,34 @@ struct SettingsView: View {
                         #endif
                         .autocorrectionDisabled()
                 } header: {
-                    Text("Seestar address")
+                    Text("Seestar address", bundle: .module)
                 } footer: {
-                    Text("Leave empty to discover the telescope automatically via "
-                         + "seestar.local. Enter an IP address if it is not found.")
+                    Text("""
+                        Leave empty to discover the telescope automatically via \
+                        seestar.local. Enter an IP address if it is not found.
+                        """, bundle: .module)
                 }
 
                 if let host = session.resolvedHost {
-                    Section("Current connection") {
-                        LabeledContent("Host", value: host)
+                    Section {
+                        LabeledContent {
+                            Text(host)
+                        } label: {
+                            Text("Host", bundle: .module)
+                        }
+                    } header: {
+                        Text("Current connection", bundle: .module)
                     }
                 }
             }
-            .navigationTitle("Settings")
+            .navigationTitle(Text("Settings", bundle: .module))
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Apply") {
+                    Button {
                         session.restart()
                         dismiss()
+                    } label: {
+                        Text("Apply", bundle: .module)
                     }
                 }
             }

@@ -22,6 +22,8 @@
 	<string>1</string>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>Seestar Companion connects to your telescope on the local network to display its images.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Seestar Companion uses your approximate location to show tonight's sunset and sunrise times.</string>
 	<key>UILaunchScreen</key>
 	<dict/>
 	<key>UIRequiresFullScreen</key>
