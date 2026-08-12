@@ -1,0 +1,17 @@
+# Sorties générées par les outils de décodage
+fixtures/*.png
+fixtures_night/
+
+# Trames volumineuses : on ne versionne que la trame de référence
+fixtures/frame_21_001_*.bin
+fixtures/frame_21_002_*.bin
+
+.DS_Store
+__pycache__/
+*.pyc
+
+# Xcode
+build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
