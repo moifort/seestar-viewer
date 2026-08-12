@@ -27,6 +27,7 @@ Les applications restent à écrire.
 | `python3 decode_frame.py <trame> --patterns` | Décodage de référence |
 | `python3 night_session.py <ip>` | Lève les hypothèses restantes |
 | `python3 Tools/fake_seestar.py` | Faux télescope pour développer sans matériel |
+| `swift run seestar-probe <hote> <secondes>` | Vérification de bout en bout de SeestarKit sur sockets réels |
 
 ## Tests
 
