@@ -10,6 +10,9 @@ options:
 packages:
   SeestarKit:
     path: .
+  VLCKitSPM:
+    url: https://github.com/virtualox/vlckit-spm
+    exactVersion: 4.0.0-alpha.21
 
 settings:
   base:
@@ -25,9 +28,12 @@ targets:
     platform: tvOS
     sources:
       - Apps/SeestarTV
+      - Apps/Shared
     dependencies:
       - package: SeestarKit
         product: SeestarUI
+      - package: VLCKitSPM
+        product: VLCKitSPM
     info:
       path: Apps/SeestarTV/Info.plist
       properties:
@@ -43,9 +49,12 @@ targets:
     platform: iOS
     sources:
       - Apps/SeestarViewer
+      - Apps/Shared
     dependencies:
       - package: SeestarKit
         product: SeestarUI
+      - package: VLCKitSPM
+        product: VLCKitSPM
     info:
       path: Apps/SeestarViewer/Info.plist
       properties:

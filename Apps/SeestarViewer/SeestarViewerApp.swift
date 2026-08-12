@@ -7,7 +7,9 @@ import SwiftUI
 struct SeestarViewerApp: App {
     var body: some Scene {
         WindowGroup {
-            ViewerScreen()
+            ViewerScreen { url in
+                VLCStreamView(url: url)
+            }
         }
     }
 }

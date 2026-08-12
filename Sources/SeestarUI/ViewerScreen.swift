@@ -10,12 +10,19 @@ import UIKit
 /// Trois règles héritées de la spec, qui expliquent la plupart des choix ici :
 /// jamais d'écran noir, jamais de mise en veille, jamais d'image parfaitement
 /// immobile (rémanence des dalles OLED).
-public struct ViewerScreen: View {
+public struct ViewerScreen<RTSPPlayer: View>: View {
     @State private var session = SeestarSession()
     @State private var showsSettings = false
     @Environment(\.scenePhase) private var scenePhase
 
-    public init() {}
+    private let rtspPlayer: (URL) -> RTSPPlayer
+
+    /// Le lecteur du flux vidéo est injecté par l'application : il repose sur
+    /// VLCKit, que ce module ne veut pas connaître pour rester testable sans
+    /// dépendance ni matériel.
+    public init(@ViewBuilder rtspPlayer: @escaping (URL) -> RTSPPlayer) {
+        self.rtspPlayer = rtspPlayer
+    }
 
     public var body: some View {
         ZStack {
@@ -27,6 +34,11 @@ public struct ViewerScreen: View {
                     .scaledToFit()
                     .antiBurnInDrift()
                     .transition(.opacity)
+            } else if let stream = session.rtspStreamURL {
+                // Modes Paysage et Système solaire : l'image ne passe que par là.
+                rtspPlayer(stream)
+                    .antiBurnInDrift()
+                    .transition(.opacity)
             } else {
                 WaitingView(status: session.model.status, host: session.resolvedHost)
             }
@@ -34,7 +46,7 @@ public struct ViewerScreen: View {
             TelemetryOverlay(
                 status: session.model.status,
                 telemetry: session.model.telemetry,
-                hasImage: session.model.displayedFrame != nil
+                hasImage: session.model.displayedFrame != nil || session.rtspStreamURL != nil
             )
         }
         // Sur la pile entière, et non sur l'image seule : sinon la zone de

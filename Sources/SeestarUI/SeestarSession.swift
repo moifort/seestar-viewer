@@ -19,10 +19,17 @@ public final class SeestarSession {
     /// Hôte réellement utilisé, une fois la découverte faite.
     public private(set) var resolvedHost: String?
 
+    /// Flux vidéo du télescope, disponible uniquement en modes Paysage et
+    /// Système solaire. Dans ces modes le canal d'imagerie binaire reste muet :
+    /// c'est ce flux, et lui seul, qui porte l'image.
+    public private(set) var rtspStreamURL: URL?
+
     private static let hostKey = "seestar.manualHost"
+    private static let rtspPort: UInt16 = 4554
     private var transport: DirectTransport?
     private var frameTask: Task<Void, Never>?
     private var eventTask: Task<Void, Never>?
+    private var rtspTask: Task<Void, Never>?
 
     public init() {
         manualHost = UserDefaults.standard.string(forKey: Self.hostKey) ?? ""
@@ -40,8 +47,11 @@ public final class SeestarSession {
     public func stop() async {
         frameTask?.cancel()
         eventTask?.cancel()
+        rtspTask?.cancel()
         frameTask = nil
         eventTask = nil
+        rtspTask = nil
+        rtspStreamURL = nil
         await transport?.stop()
         transport = nil
     }
@@ -80,6 +90,26 @@ public final class SeestarSession {
                 model.consume(event)
             }
         }
+        startRTSPProbe(host: host)
         await transport.start()
+    }
+
+    /// Surveille l'ouverture du port RTSP pour détecter les modes Paysage et
+    /// Système solaire. On sonde plutôt que d'écouter les événements : le
+    /// champ `mode` peut arriver en retard, alors que le port ouvert est un
+    /// fait immédiat. La sonde n'écrit rien et ne consomme aucune place sur le
+    /// canal d'imagerie.
+    private func startRTSPProbe(host: String) {
+        rtspTask = Task { [weak self] in
+            while !Task.isCancelled {
+                let open = await PortProbe.isOpen(host: host, port: Self.rtspPort)
+                guard let self, !Task.isCancelled else { return }
+                let url = open ? URL(string: "rtsp://\(host):\(Self.rtspPort)/stream") : nil
+                if url != self.rtspStreamURL {
+                    self.rtspStreamURL = url
+                }
+                try? await Task.sleep(for: .seconds(5))
+            }
+        }
     }
 }
