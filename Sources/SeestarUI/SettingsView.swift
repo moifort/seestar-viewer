@@ -10,7 +10,7 @@ struct SettingsView: View {
         NavigationStack {
             Form {
                 Section {
-                    TextField("192.168.1.170", text: $session.manualHost)
+                    TextField("192.168.1.42", text: $session.manualHost)
                         #if !os(tvOS) && !os(macOS)
                         .textInputAutocapitalization(.never)
                         .keyboardType(.numbersAndPunctuation)

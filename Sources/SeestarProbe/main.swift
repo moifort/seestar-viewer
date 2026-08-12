@@ -15,7 +15,7 @@ let manualHost = arguments.count > 1 ? arguments[1] : nil
 let duration = arguments.count > 2 ? (Double(arguments[2]) ?? 15) : 15
 
 guard let host = await SeestarDiscovery.resolve(manualHost: manualHost) else {
-    print("Aucun Seestar trouvé. Passe une adresse : swift run seestar-probe 192.168.1.170")
+    print("Aucun Seestar trouvé. Passe une adresse : swift run seestar-probe 192.168.1.42")
     exit(1)
 }
 print("cible \(host), écoute \(Int(duration)) s")

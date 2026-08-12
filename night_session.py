@@ -23,7 +23,7 @@ import time
 import zipfile
 from io import BytesIO
 
-HOST = sys.argv[1] if len(sys.argv) > 1 else "192.168.1.170"
+HOST = sys.argv[1] if len(sys.argv) > 1 else "seestar.local"
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fixtures_night")
 
 HEADER_SIZE = 80
