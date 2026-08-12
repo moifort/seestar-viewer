@@ -47,7 +47,7 @@ public struct ViewerScreen<RTSPPlayer: View>: View {
             }
 
             TelemetryOverlay(
-                status: session.model.status,
+                status: displayedStatus,
                 telemetry: session.model.telemetry,
                 isVisible: showsOverlay
             )
@@ -85,6 +85,16 @@ public struct ViewerScreen<RTSPPlayer: View>: View {
             SettingsView(session: session)
         }
         #endif
+    }
+
+    /// L'état affiché doit décrire ce qui est à l'écran, pas ce que reçoit le
+    /// canal binaire. En mode Solaire celui-ci reste muet, donc le modèle dit
+    /// « en attente » alors que le flux vidéo, lui, s'affiche très bien.
+    private var displayedStatus: ViewerStatus {
+        if session.model.displayedFrame == nil, session.rtspStreamURL != nil {
+            return .streaming
+        }
+        return session.model.status
     }
 
     /// Dans le ciel il n'y a pas de haut : on tourne librement l'image portrait
@@ -160,7 +170,7 @@ struct WaitingView: View {
         case .waitingForExposure: return "moon.stars"
         case .tooManyConnections: return "person.2.slash"
         case .disconnected: return "wifi.exclamationmark"
-        case .live, .stacking: return "photo"
+        case .live, .stacking, .streaming: return "photo"
         }
     }
 
@@ -170,7 +180,7 @@ struct WaitingView: View {
         case .waitingForExposure: return "Télescope connecté"
         case .tooManyConnections: return "Télescope déjà occupé"
         case .disconnected: return "Connexion perdue"
-        case .live, .stacking: return "En attente d'image"
+        case .live, .stacking, .streaming: return "En attente d'image"
         }
     }
 
@@ -186,7 +196,7 @@ struct WaitingView: View {
                 + "appareil connecté au télescope, puis réessaie."
         case .disconnected:
             return "Reconnexion automatique en cours."
-        case .live, .stacking:
+        case .live, .stacking, .streaming:
             return ""
         }
     }

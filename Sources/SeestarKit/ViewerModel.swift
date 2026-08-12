@@ -7,6 +7,10 @@ public enum ViewerStatus: Equatable, Sendable {
     case waitingForExposure
     case live
     case stacking
+    /// Flux vidéo RTSP à l'écran, en mode Paysage ou Système solaire.
+    /// Cet état ne vient pas du canal binaire, qui reste muet dans ces modes :
+    /// il décrit ce que l'utilisateur voit, pas ce que le modèle reçoit.
+    case streaming
     /// Le canal d'imagerie du télescope est saturé : il n'accepte qu'un très
     /// petit nombre de clients simultanés, et la place est déjà prise.
     case tooManyConnections
