@@ -1,0 +1,59 @@
+name: Seestar
+
+options:
+  bundleIdPrefix: fr.thibaut.seestar
+  deploymentTarget:
+    tvOS: "17.0"
+    iOS: "17.0"
+  createIntermediateGroups: true
+
+packages:
+  SeestarKit:
+    path: .
+
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    # Pas de compte développeur requis pour compiler en simulateur.
+    CODE_SIGNING_ALLOWED: NO
+
+targets:
+  SeestarTV:
+    type: application
+    platform: tvOS
+    sources:
+      - Apps/SeestarTV
+    dependencies:
+      - package: SeestarKit
+        product: SeestarUI
+    info:
+      path: Apps/SeestarTV/Info.plist
+      properties:
+        CFBundleDisplayName: Seestar
+        # Sans cette autorisation, toute connexion au réseau local échoue
+        # silencieusement : le télescope semble simplement injoignable.
+        NSLocalNetworkUsageDescription: >-
+          Seestar se connecte à votre télescope sur le réseau local pour
+          afficher ses images.
+
+  SeestarViewer:
+    type: application
+    platform: iOS
+    sources:
+      - Apps/SeestarViewer
+    dependencies:
+      - package: SeestarKit
+        product: SeestarUI
+    info:
+      path: Apps/SeestarViewer/Info.plist
+      properties:
+        CFBundleDisplayName: Seestar
+        NSLocalNetworkUsageDescription: >-
+          Seestar se connecte à votre télescope sur le réseau local pour
+          afficher ses images.
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        UIRequiresFullScreen: true

@@ -18,3 +18,6 @@ xcuserdata/
 
 .build/
 Package.resolved
+
+# Xcode généré par xcodegen
+Seestar.xcodeproj/

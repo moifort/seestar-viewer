@@ -22,7 +22,10 @@ public enum StackUnpacker {
     }
 
     public static func unpack(_ payload: Data) throws -> Data {
-        guard let archive = try? Archive(data: payload, accessMode: .read) else {
+        // `pathEncoding` explicite : sans lui, l'appel résout vers un
+        // initialiseur déprécié qui ne lance pas d'erreur.
+        guard let archive = try? Archive(data: payload, accessMode: .read, pathEncoding: nil)
+        else {
             throw Erreur.archiveIllisible
         }
         guard let entry = archive[entryName] else {

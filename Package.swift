@@ -6,6 +6,7 @@ let package = Package(
     platforms: [.tvOS(.v17), .iOS(.v17), .macOS(.v14)],
     products: [
         .library(name: "SeestarKit", targets: ["SeestarKit"]),
+        .library(name: "SeestarUI", targets: ["SeestarUI"]),
         .executable(name: "seestar-probe", targets: ["SeestarProbe"])
     ],
     dependencies: [
@@ -16,6 +17,7 @@ let package = Package(
             name: "SeestarKit",
             dependencies: [.product(name: "ZIPFoundation", package: "ZIPFoundation")]
         ),
+        .target(name: "SeestarUI", dependencies: ["SeestarKit"]),
         .executableTarget(name: "SeestarProbe", dependencies: ["SeestarKit"]),
         .testTarget(
             name: "SeestarKitTests",
