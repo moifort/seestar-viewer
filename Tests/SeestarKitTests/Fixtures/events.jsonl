@@ -1,0 +1,11 @@
+{"Event":"PiStatus","Timestamp":"1320.696115548","battery_temp":35}
+{"Event":"PiStatus","Timestamp":"1346.833767864","battery_capacity":102}
+{"Event":"PiStatus","Timestamp":"1347.840191019","battery_capacity":100}
+{"Event":"View","Timestamp":"1360.961813199","state":"cancel","lapse_ms":219737,"mode":"scenery","cam_id":0,"exp_ms":500.000000,"port":4700,"manual_exp":false,"timelapse":{"enable":false,"delay_sec":1.000000,"src_dura_min":-1},"route":[]}
+{"Event":"View","Timestamp":"1360.972960942","state":"cancel","lapse_ms":219737,"mode":"none","cam_id":0,"manual_exp":false,"timelapse":{"enable":false,"delay_sec":1.000000,"src_dura_min":-1},"route":[]}
+{"Event":"PiStatus","Timestamp":"1362.211637803","temp":64.199997}
+{"Event":"PiStatus","Timestamp":"1366.237085464","temp":62.900002}
+{"Event":"View","Timestamp":"1372.272784780","state":"working","lapse_ms":0,"mode":"star","cam_id":0,"lp_filter":false,"gain":0,"route":[]}
+{"Event":"ScopeTrack","Timestamp":"1372.582786775","state":"on","tracking":true,"manual":true,"route":[]}
+{"Event":"ContinuousExposure","Timestamp":"1372.702161093","state":"working","lapse_ms":0,"fps":0.000000,"route":["View"]}
+{"Event":"PiStatus","Timestamp":"1378.291928125","temp":64.199997}
