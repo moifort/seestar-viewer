@@ -34,12 +34,11 @@ deuxième ligne de la description, dans les deux langues. C'est le premier
 Watch your telescope live
 ```
 
-### Promotional text (168 / 170)
+### Promotional text (152 / 170)
 
 ```
 Turn your Apple TV into the biggest eyepiece in the house. Watch your Seestar
-build a deep-sky image live, or follow the Sun and the landscape, on any screen
-in your home.
+build a deep-sky image live, or follow the Sun, on any screen you own.
 ```
 
 ### Keywords (90 / 100)
