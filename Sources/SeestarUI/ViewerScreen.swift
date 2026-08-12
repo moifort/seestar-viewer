@@ -13,6 +13,7 @@ import UIKit
 public struct ViewerScreen<RTSPPlayer: View>: View {
     @State private var session = SeestarSession()
     @State private var showsSettings = false
+    @State private var showsOverlay = true
     @Environment(\.scenePhase) private var scenePhase
 
     private let rtspPlayer: (URL) -> RTSPPlayer
@@ -42,18 +43,27 @@ public struct ViewerScreen<RTSPPlayer: View>: View {
                     .antiBurnInDrift()
                     .transition(.opacity)
             } else {
-                WaitingView(status: session.model.status, host: session.resolvedHost)
+                WaitingView(status: session.model.status)
             }
 
             TelemetryOverlay(
                 status: session.model.status,
                 telemetry: session.model.telemetry,
-                hasImage: session.model.displayedFrame != nil || session.rtspStreamURL != nil
+                isVisible: showsOverlay
             )
         }
         // Sur la pile entière, et non sur l'image seule : sinon la zone de
         // sécurité tvOS rogne l'écran et l'image 16/9 ne remplit plus la dalle.
         .ignoresSafeArea()
+        #if os(tvOS)
+        // La flèche du haut de la télécommande montre et masque la barre.
+        // Il faut que la vue puisse prendre le focus pour recevoir la commande.
+        .focusable()
+        .onMoveCommand { direction in
+            guard direction == .up else { return }
+            showsOverlay.toggle()
+        }
+        #endif
         .animation(.easeInOut(duration: 0.4), value: session.model.displayedFrame?.width)
         .onAppear {
             setIdleTimerDisabled(true)
@@ -126,7 +136,6 @@ struct PlatformRotated<Content: View>: View {
 /// pas une erreur : le télescope est joignable, il n'expose simplement pas.
 struct WaitingView: View {
     let status: ViewerStatus
-    let host: String?
 
     var body: some View {
         VStack(spacing: 16) {
@@ -170,9 +179,7 @@ struct WaitingView: View {
         case .searching:
             return "Vérifie que le Seestar est allumé et rattaché au même réseau Wi-Fi."
         case .waitingForExposure:
-            let where_ = host.map { " sur \($0)" } ?? ""
-            return "Connecté\(where_). Lance une vue en mode Stargazing "
-                + "depuis l'application officielle pour recevoir les images."
+            return "Lance l'application Seestar."
         case .tooManyConnections:
             return "Le Seestar n'accepte qu'un nombre très limité de spectateurs "
                 + "sur son canal d'images, et la place est prise. Ferme un autre "
