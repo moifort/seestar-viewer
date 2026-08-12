@@ -71,6 +71,44 @@ func trameRGB(id: UInt8, width: Int = 2, height: Int = 1) -> RawFrame {
 }
 
 @MainActor
+@Test func toutSigneDeVieSortDeLEtatDeRecherche() {
+    // Mesuré sur le vrai S30 : au repos il répond « done » à begin_streaming
+    // puis n'envoie plus rien. On est connecté, pas en train de chercher.
+    let model = ViewerModel()
+    #expect(model.status == .searching)
+
+    let done = RawFrame(id: 21, width: 0, height: 0, payload: Data("done".utf8))
+    model.consume(done, at: Date())
+    #expect(model.status == .waitingForExposure)
+}
+
+@MainActor
+@Test func unEvenementSuffitAProuverLaConnexion() {
+    let model = ViewerModel()
+    var parser = EventStreamParser()
+    parser.append(Data(#"{"Event":"PiStatus","temp":40.0}"#.utf8))
+    parser.append(Data("\r\n".utf8))
+    model.consume(parser.next()!)
+
+    #expect(model.status == .waitingForExposure)
+}
+
+@MainActor
+@Test func unEvenementNeDegradePasUnAffichageEnCours() {
+    // La télémétrie ne doit jamais faire reculer l'état d'affichage.
+    let model = ViewerModel()
+    model.consume(trameRGB(id: 23), at: Date())
+    #expect(model.status == .stacking)
+
+    var parser = EventStreamParser()
+    parser.append(Data(#"{"Event":"PiStatus","temp":40.0}"#.utf8))
+    parser.append(Data("\r\n".utf8))
+    model.consume(parser.next()!)
+
+    #expect(model.status == .stacking)
+}
+
+@MainActor
 @Test func laTelemetrieEstMiseAJour() {
     let model = ViewerModel()
     var parser = EventStreamParser()

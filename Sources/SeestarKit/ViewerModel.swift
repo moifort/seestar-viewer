@@ -40,11 +40,11 @@ public final class ViewerModel {
     public init() {}
 
     public func consume(_ frame: RawFrame, at date: Date = Date()) {
-        // Réponse en clair : un état, pas une image.
-        if let message = frame.textMessage {
-            if message.contains("continuous exposure") {
-                status = .waitingForExposure
-            }
+        // Réponse en clair : un état, pas une image. Qu'il s'agisse de « done »
+        // ou du refus « only available for continuous exposure », le scope nous
+        // parle : on est connecté et en attente, plus en train de chercher.
+        if frame.textMessage != nil {
+            noteSignOfLife()
             return
         }
 
@@ -68,11 +68,22 @@ public final class ViewerModel {
     }
 
     public func consume(_ event: SeestarEvent) {
+        noteSignOfLife()
         if let mode = event.mode { telemetry.mode = mode }
         if let tracking = event.tracking { telemetry.tracking = tracking }
         if let battery = event.batteryCapacity { telemetry.batteryCapacity = battery }
         if let temperature = event.temperature { telemetry.temperature = temperature }
         if let target = event.raw["target_name"] as? String { telemetry.target = target }
+    }
+
+    /// Le télescope a donné signe de vie sans fournir d'image.
+    ///
+    /// Ne fait jamais reculer un affichage en cours : la télémétrie continue
+    /// d'arriver pendant un empilement, elle ne doit pas le masquer.
+    private func noteSignOfLife() {
+        if status == .searching || status == .disconnected {
+            status = .waitingForExposure
+        }
     }
 
     /// La connexion est tombée : on garde la dernière image à l'écran.
