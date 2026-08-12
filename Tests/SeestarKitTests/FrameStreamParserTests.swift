@@ -56,6 +56,39 @@ import Testing
     #expect(frame?.textMessage == "only available for continuous exposure")
 }
 
+@Test func uneAlerteJsonBruteNEstPasLueCommeUnEnTete() {
+    // Mesuré sur le matériel : le scope envoie parfois une ligne JSON nue sur
+    // le port 4800, sans en-tête binaire. Lue comme un en-tête, elle annonçait
+    // une trame de 1,9 Go et faisait dérailler la connexion.
+    var parser = FrameStreamParser()
+    let alerte = #"{"Event":"Alert","Msg":"Exceed the maximum number of connections"}"#
+    parser.append(Data((alerte + "\r\n").utf8))
+
+    let frame = parser.next()
+    #expect(frame?.textMessage == alerte)
+    #expect(frame?.id == RawFrame.jsonLineID)
+}
+
+@Test func uneTrameBinaireSuivantUneAlerteResteLisible() {
+    // Le flux doit se resynchroniser : après la ligne JSON, la trame suivante
+    // se décode normalement.
+    var parser = FrameStreamParser()
+    let alerte = Data((#"{"Event":"Alert"}"# + "\r\n").utf8)
+    let trame = makeHeader(size: 4, code: 0, id: 21, width: 2, height: 1) + Data([1, 2, 3, 4])
+    parser.append(alerte + trame)
+
+    #expect(parser.next()?.id == RawFrame.jsonLineID)
+    #expect(parser.next()?.id == 21)
+}
+
+@Test func uneLigneJsonIncompleteEstAttendue() {
+    var parser = FrameStreamParser()
+    parser.append(Data(#"{"Event":"Al"#.utf8))
+    #expect(parser.next() == nil)
+    parser.append(Data((#"ert"}"# + "\r\n").utf8))
+    #expect(parser.next()?.textMessage == #"{"Event":"Alert"}"#)
+}
+
 @Test func unePayloadBinaireNEstPasDuTexte() {
     var parser = FrameStreamParser()
     let binaire = Data(repeating: 0x00, count: 4_147_200)

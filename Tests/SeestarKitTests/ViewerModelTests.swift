@@ -109,6 +109,35 @@ func trameRGB(id: UInt8, width: Int = 2, height: Int = 1) -> RawFrame {
 }
 
 @MainActor
+@Test func laSaturationDesConnexionsEstSignalee() {
+    // Mesuré : le canal d'imagerie du Seestar n'accepte qu'un très petit
+    // nombre de clients. Au-delà, il refuse en clair. L'utilisateur doit le
+    // savoir, sinon l'écran reste muet sans explication.
+    let model = ViewerModel()
+    let alerte = RawFrame(
+        id: RawFrame.jsonLineID, width: 0, height: 0,
+        payload: Data(#"{"Event":"Alert","Msg":"Exceed the maximum number of connections"}"#.utf8)
+    )
+    model.consume(alerte, at: Date())
+
+    #expect(model.status == .tooManyConnections)
+}
+
+@MainActor
+@Test func laSaturationNEffacePasUneImageDejaAffichee() {
+    let model = ViewerModel()
+    model.consume(trameRGB(id: 23), at: Date())
+    let alerte = RawFrame(
+        id: RawFrame.jsonLineID, width: 0, height: 0,
+        payload: Data(#"{"Msg":"Exceed the maximum number of connections"}"#.utf8)
+    )
+    model.consume(alerte, at: Date())
+
+    // Règle d'or : on ne vide jamais l'écran.
+    #expect(model.displayedFrame != nil)
+}
+
+@MainActor
 @Test func laTelemetrieEstMiseAJour() {
     let model = ViewerModel()
     var parser = EventStreamParser()

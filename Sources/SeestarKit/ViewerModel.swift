@@ -7,6 +7,9 @@ public enum ViewerStatus: Equatable, Sendable {
     case waitingForExposure
     case live
     case stacking
+    /// Le canal d'imagerie du télescope est saturé : il n'accepte qu'un très
+    /// petit nombre de clients simultanés, et la place est déjà prise.
+    case tooManyConnections
     case disconnected
 }
 
@@ -43,7 +46,12 @@ public final class ViewerModel {
         // Réponse en clair : un état, pas une image. Qu'il s'agisse de « done »
         // ou du refus « only available for continuous exposure », le scope nous
         // parle : on est connecté et en attente, plus en train de chercher.
-        if frame.textMessage != nil {
+        if let message = frame.textMessage {
+            // Le refus le plus fréquent, et le plus déroutant s'il reste muet.
+            if message.contains("Exceed the maximum number of connections") {
+                if displayedFrame == nil { status = .tooManyConnections }
+                return
+            }
             noteSignOfLife()
             return
         }

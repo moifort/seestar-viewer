@@ -109,6 +109,7 @@ struct WaitingView: View {
         switch status {
         case .searching: return "antenna.radiowaves.left.and.right"
         case .waitingForExposure: return "moon.stars"
+        case .tooManyConnections: return "person.2.slash"
         case .disconnected: return "wifi.exclamationmark"
         case .live, .stacking: return "photo"
         }
@@ -118,6 +119,7 @@ struct WaitingView: View {
         switch status {
         case .searching: return "Recherche du Seestar"
         case .waitingForExposure: return "Télescope connecté"
+        case .tooManyConnections: return "Télescope déjà occupé"
         case .disconnected: return "Connexion perdue"
         case .live, .stacking: return "En attente d'image"
         }
@@ -131,6 +133,10 @@ struct WaitingView: View {
             let where_ = host.map { " sur \($0)" } ?? ""
             return "Connecté\(where_). Lance une vue en mode Stargazing "
                 + "depuis l'application officielle pour recevoir les images."
+        case .tooManyConnections:
+            return "Le Seestar n'accepte qu'un nombre très limité de spectateurs "
+                + "sur son canal d'images, et la place est prise. Ferme un autre "
+                + "appareil connecté au télescope, puis réessaie."
         case .disconnected:
             return "Reconnexion automatique en cours."
         case .live, .stacking:

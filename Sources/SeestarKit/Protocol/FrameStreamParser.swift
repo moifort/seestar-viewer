@@ -13,9 +13,24 @@ public struct FrameStreamParser: Sendable {
         buffer.append(data)
     }
 
+    private static let lineSeparator = Data("\r\n".utf8)
+    private static let openingBrace = UInt8(ascii: "{")
+
     /// Rend la prochaine trame disponible, ou `nil` s'il manque des octets.
     public mutating func next() -> RawFrame? {
         while true {
+            // Le scope glisse parfois une ligne JSON nue dans ce flux, sans
+            // en-tête binaire — mesuré avec l'alerte de saturation des
+            // connexions. Lue comme un en-tête, elle annonce une taille
+            // délirante et fait dérailler la lecture : on la reconnaît à son
+            // accolade ouvrante et on la consomme jusqu'au saut de ligne.
+            if let first = buffer.first, first == Self.openingBrace {
+                guard let range = buffer.range(of: Self.lineSeparator) else { return nil }
+                let line = Data(buffer[buffer.startIndex..<range.lowerBound])
+                buffer = Data(buffer[range.upperBound...])
+                return RawFrame(id: RawFrame.jsonLineID, width: 0, height: 0, payload: line)
+            }
+
             guard buffer.count >= FrameHeader.byteCount,
                   let header = FrameHeader(Data(buffer.prefix(20)))
             else { return nil }

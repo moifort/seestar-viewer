@@ -55,6 +55,7 @@ struct TelemetryOverlay: View {
         case .waitingForExposure: return "En attente"
         case .live: return "Live"
         case .stacking: return "Empilement"
+        case .tooManyConnections: return "Occupé"
         case .disconnected: return "Déconnecté"
         }
     }
@@ -65,6 +66,7 @@ struct TelemetryOverlay: View {
         case .waitingForExposure: return "hourglass"
         case .live: return "dot.radiowaves.left.and.right"
         case .stacking: return "square.stack.3d.up"
+        case .tooManyConnections: return "person.2.slash"
         case .disconnected: return "exclamationmark.triangle"
         }
     }
