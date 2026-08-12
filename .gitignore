@@ -15,3 +15,6 @@ build/
 DerivedData/
 *.xcuserstate
 xcuserdata/
+
+.build/
+Package.resolved
