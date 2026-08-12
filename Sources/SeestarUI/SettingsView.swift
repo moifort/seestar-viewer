@@ -17,23 +17,22 @@ struct SettingsView: View {
                         #endif
                         .autocorrectionDisabled()
                 } header: {
-                    Text("Adresse du Seestar")
+                    Text("Seestar address")
                 } footer: {
-                    Text("Laisse vide pour la découverte automatique via "
-                         + "seestar.local. Renseigne une adresse IP si le "
-                         + "télescope n'est pas trouvé.")
+                    Text("Leave empty to discover the telescope automatically via "
+                         + "seestar.local. Enter an IP address if it is not found.")
                 }
 
                 if let host = session.resolvedHost {
-                    Section("Connexion en cours") {
-                        LabeledContent("Hôte", value: host)
+                    Section("Current connection") {
+                        LabeledContent("Host", value: host)
                     }
                 }
             }
-            .navigationTitle("Réglages")
+            .navigationTitle("Settings")
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Appliquer") {
+                    Button("Apply") {
                         session.restart()
                         dismiss()
                     }

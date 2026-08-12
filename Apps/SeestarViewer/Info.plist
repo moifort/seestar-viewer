@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Seestar</string>
+	<string>Seestar Companion</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -21,7 +21,7 @@
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>NSLocalNetworkUsageDescription</key>
-	<string>Seestar se connecte à votre télescope sur le réseau local pour afficher ses images.</string>
+	<string>Seestar Companion connects to your telescope on the local network to display its images.</string>
 	<key>UILaunchScreen</key>
 	<dict/>
 	<key>UIRequiresFullScreen</key>

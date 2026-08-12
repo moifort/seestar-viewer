@@ -176,26 +176,26 @@ struct WaitingView: View {
 
     private var title: String {
         switch status {
-        case .searching: return "Recherche du Seestar"
-        case .waitingForExposure: return "Télescope connecté"
-        case .tooManyConnections: return "Télescope déjà occupé"
-        case .disconnected: return "Connexion perdue"
-        case .live, .stacking, .streaming: return "En attente d'image"
+        case .searching: return "Looking for your Seestar"
+        case .waitingForExposure: return "Telescope connected"
+        case .tooManyConnections: return "Telescope already busy"
+        case .disconnected: return "Connection lost"
+        case .live, .stacking, .streaming: return "Waiting for an image"
         }
     }
 
     private var detail: String {
         switch status {
         case .searching:
-            return "Vérifie que le Seestar est allumé et rattaché au même réseau Wi-Fi."
+            return "Make sure the Seestar is powered on and joined to the same Wi-Fi network."
         case .waitingForExposure:
-            return "Lance l'application Seestar."
+            return "Open the Seestar app."
         case .tooManyConnections:
-            return "Le Seestar n'accepte qu'un nombre très limité de spectateurs "
-                + "sur son canal d'images, et la place est prise. Ferme un autre "
-                + "appareil connecté au télescope, puis réessaie."
+            return "The Seestar allows only a handful of viewers on its image "
+                + "channel, and the slot is taken. Close another device connected "
+                + "to the telescope, then try again."
         case .disconnected:
-            return "Reconnexion automatique en cours."
+            return "Reconnecting automatically."
         case .live, .stacking, .streaming:
             return ""
         }

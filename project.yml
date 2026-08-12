@@ -1,7 +1,7 @@
 name: Seestar
 
 options:
-  bundleIdPrefix: fr.thibaut.seestar
+  bundleIdPrefix: fr.thibaut
   deploymentTarget:
     tvOS: "17.0"
     iOS: "17.0"
@@ -26,6 +26,9 @@ targets:
   SeestarTV:
     type: application
     platform: tvOS
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: fr.thibaut.SeestarCompanion
     sources:
       - Apps/SeestarTV
       - Apps/Shared
@@ -37,16 +40,19 @@ targets:
     info:
       path: Apps/SeestarTV/Info.plist
       properties:
-        CFBundleDisplayName: Seestar
+        CFBundleDisplayName: Seestar Companion
         # Sans cette autorisation, toute connexion au réseau local échoue
         # silencieusement : le télescope semble simplement injoignable.
         NSLocalNetworkUsageDescription: >-
-          Seestar se connecte à votre télescope sur le réseau local pour
-          afficher ses images.
+          Seestar Companion connects to your telescope on the local network
+          to display its images.
 
   SeestarViewer:
     type: application
     platform: iOS
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: fr.thibaut.SeestarCompanion
     sources:
       - Apps/SeestarViewer
       - Apps/Shared
@@ -58,10 +64,10 @@ targets:
     info:
       path: Apps/SeestarViewer/Info.plist
       properties:
-        CFBundleDisplayName: Seestar
+        CFBundleDisplayName: Seestar Companion
         NSLocalNetworkUsageDescription: >-
-          Seestar se connecte à votre télescope sur le réseau local pour
-          afficher ses images.
+          Seestar Companion connects to your telescope on the local network
+          to display its images.
         UILaunchScreen: {}
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait

@@ -1,4 +1,4 @@
-# Seestar Viewer
+# Seestar Companion
 
 Visualiseur Apple TV, iPad et iPhone pour le télescope ZWO Seestar S30.
 Affiche en plein écran l'image en cours d'empilement, sur le réseau local.

@@ -50,13 +50,13 @@ struct TelemetryOverlay: View {
 
     private var statusText: String {
         switch status {
-        case .searching: return "Recherche"
-        case .waitingForExposure: return "En attente"
+        case .searching: return "Searching"
+        case .waitingForExposure: return "Idle"
         case .live: return "Live"
-        case .streaming: return "Direct"
-        case .stacking: return "Empilement"
-        case .tooManyConnections: return "Occupé"
-        case .disconnected: return "Déconnecté"
+        case .streaming: return "Live view"
+        case .stacking: return "Stacking"
+        case .tooManyConnections: return "Busy"
+        case .disconnected: return "Disconnected"
         }
     }
 
