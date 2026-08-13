@@ -1,3 +1,8 @@
+---
+title: Privacy Policy — Seestar Companion
+permalink: /privacy/
+---
+
 # Privacy Policy — Seestar Companion
 
 _Last updated: 12 August 2026_
