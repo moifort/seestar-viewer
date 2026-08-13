@@ -107,12 +107,11 @@ First release.
 Votre télescope en direct
 ```
 
-### Texte promotionnel (169 / 170)
+### Texte promotionnel (157 / 170)
 
 ```
-Faites de votre Apple TV le plus grand oculaire de la maison. Regardez votre
-Seestar construire une image du ciel profond, ou suivez le Soleil, sur
-n'importe quel écran.
+Utilisez votre Apple TV, votre iPad et votre iPhone comme compagnons de votre
+télescope Seestar, pour partager ce qu'il voit avec votre famille ou vos invités.
 ```
 
 ### Mots-clés (86 / 100)
@@ -125,46 +124,17 @@ astronomie,télescope,astrophotographie,ciel,étoiles,nébuleuse,direct,observat
 
 ```
 Seestar Companion transforme votre Apple TV, votre iPad et votre iPhone en
-écrans supplémentaires pour votre télescope intelligent.
+écrans supplémentaires, afin de partager ce que voit votre télescope.
 
 Application indépendante et non officielle. Elle n'est ni éditée, ni
 approuvée, ni affiliée par ZWO, le fabricant du Seestar.
 
-REGARDER, SANS TOUCHER À RIEN
+Connectez-vous à votre télescope avec l'application officielle Seestar, puis
+lancez Seestar Companion : elle affiche automatiquement ce que voit le
+télescope.
 
-Votre séance reste pilotée par l'application officielle Seestar. Seestar
-Companion se contente d'écouter sur votre réseau local et d'afficher ce que
-voit le télescope, en plein écran, sans rien qui s'interpose. Pointez votre
-instrument, puis asseyez-vous et regardez l'image arriver.
-
-PENSÉE POUR LES LONGUES NUITS
-
-Une image du ciel profond n'est pas une photographie, c'est une lente
-accumulation. Seestar Companion montre l'empilement à mesure qu'il grandit,
-image après image, le bruit qui recule et les détails ténus qui apparaissent.
-L'écran ne s'éteint jamais, ne devient jamais noir, et se reconnecte seul si
-le Wi-Fi hésite.
-
-DE JOUR COMME DE NUIT
-
-En mode astronomie, vous recevez l'image empilée et l'aperçu en direct. En
-modes paysage et solaire, c'est le flux vidéo du télescope. L'application suit
-le mode que vous choisissez, sans rien vous demander.
-
-D'UN COUP D'ŒIL
-
-Une barre discrète affiche l'essentiel : ce que fait le télescope, le niveau de
-batterie et la température. La flèche du haut de la télécommande la montre ou
-la masque.
-
-CE QU'IL VOUS FAUT
-
-- Un télescope ZWO Seestar sur le même réseau Wi-Fi que votre appareil
-- L'application officielle Seestar, pour lancer et diriger la séance
-- L'autorisation d'accès au réseau local, demandée au premier lancement
-
-Le télescope ne dessert que très peu de spectateurs à la fois sur son canal
-d'images. En pratique, utilisez un écran à la fois.
+Attention : cela ne fonctionne que si le télescope et les autres appareils
+sont connectés au même réseau Wi-Fi.
 ```
 
 ### Nouveautés (version 1.0)
