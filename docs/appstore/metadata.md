@@ -34,11 +34,11 @@ deuxième ligne de la description, dans les deux langues. C'est le premier
 Watch your telescope live
 ```
 
-### Promotional text (152 / 170)
+### Promotional text (129 / 170)
 
 ```
-Turn your Apple TV into the biggest eyepiece in the house. Watch your Seestar
-build a deep-sky image live, or follow the Sun, on any screen you own.
+Use your Apple TV, iPad and iPhone as companions to your Seestar telescope,
+to share what it sees with your family and your guests.
 ```
 
 ### Keywords (90 / 100)
@@ -50,45 +50,17 @@ astronomy,telescope,astrophotography,stargazing,nebula,live view,smart telescope
 ### Description
 
 ```
-Seestar Companion turns your Apple TV, iPad and iPhone into extra screens for
-your smart telescope.
+Seestar Companion turns your Apple TV, iPad and iPhone into extra screens,
+so you can share what your telescope sees.
 
 This is an independent, unofficial app. It is not made by, endorsed by or
 affiliated with ZWO, the maker of the Seestar.
 
-WATCH, DON'T FIDDLE
+Connect to your telescope with the official Seestar app, then open Seestar
+Companion: it automatically shows what the telescope sees.
 
-Your session stays under the control of the official Seestar app. Seestar
-Companion simply listens on your local network and shows what the telescope
-sees, full screen, with nothing in the way. Point your telescope, then sit
-down and watch the image arrive.
-
-BUILT FOR LONG NIGHTS
-
-A deep-sky image is not a photograph, it is a slow accumulation. Seestar
-Companion shows the stack as it grows, frame after frame, the noise receding
-and the faint detail emerging. The screen never sleeps, never goes black, and
-quietly reconnects on its own if the Wi-Fi stumbles.
-
-DAY AND NIGHT
-
-In stargazing mode you get the stacked image and the live preview. In landscape
-and solar modes you get the telescope's video stream. The app follows whichever
-mode you choose, without asking.
-
-AT A GLANCE
-
-A discreet bar shows what matters: what the telescope is doing, battery level
-and temperature. Press up on the remote to show or hide it.
-
-WHAT YOU NEED
-
-- A ZWO Seestar telescope on the same Wi-Fi network as your device
-- The official Seestar app, to start and steer the session
-- Local network permission, which the app requests on first launch
-
-The telescope serves its image channel to very few viewers at once. In
-practice, use one screen at a time.
+Please note: this only works if the telescope and your other devices are
+connected to the same Wi-Fi network.
 ```
 
 ### What's New (version 1.0)
