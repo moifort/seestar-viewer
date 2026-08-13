@@ -4,8 +4,10 @@
 Permet de developper et de tester l'app en plein jour, sans telescope, et de
 provoquer a volonte les pannes a gerer.
 
-    python3 Tools/fake_seestar.py [--refuse] [--coupe-apres N]
+    python3 Tools/fake_seestar.py [--image FICHIER] [--refuse] [--coupe-apres N]
 
+  --image        rejoue une image au lieu du fixture, remosaiquee en Bayer
+                 (voir mosaic_from_image)
   --refuse       repond "only available for continuous exposure" au lieu de
                  streamer, pour tester l'ecran d'attente
   --coupe-apres  ferme brutalement le socket apres N trames, pour tester
@@ -29,6 +31,36 @@ def make_header(size, frame_id, width, height):
     """Reproduit l'en-tete de 80 octets mesure sur le materiel."""
     head = struct.pack(">HHHIHHBBHH", 0, 0, 0, size, 0, 0, 0, frame_id, width, height)
     return head + b"\x00" * (80 - len(head))
+
+
+def mosaic_from_image(path):
+    """Remosaique une image en trame Bayer 16 bits, l'inverse du decodage.
+
+    Le seul fixture enregistre est une trame de plein jour brulee : mediane
+    egale au maximum, donc inexploitable pour une capture. Cette fonction
+    permet de rejouer n'importe quelle image deja rendue.
+
+    Le decodeur binne les blocs 2x2 sans dematricer. On part donc de la
+    demi-resolution et on ecrit chaque composante a sa place dans le bloc,
+    le vert en double. L'aller-retour est exact au bit pres, et l'etirement
+    automatique laisse l'image intacte tant que le fond est uniforme : son
+    MAD est alors nul, cas ou AutoStretch passe le canal tel quel.
+    """
+    import numpy as np
+    from PIL import Image
+
+    half = Image.open(path).convert("RGB").resize((WIDTH // 2, HEIGHT // 2),
+                                                  Image.LANCZOS)
+    rgb = (np.asarray(half).astype(np.float32) / 255.0 * 65535.0)
+    rgb = np.clip(rgb, 0, 65535).astype("<u2")
+
+    # Motif GRBG, celui que suppose RawBufferDecoder.
+    raw = np.zeros((HEIGHT, WIDTH), dtype="<u2")
+    raw[0::2, 0::2] = rgb[..., 1]
+    raw[0::2, 1::2] = rgb[..., 0]
+    raw[1::2, 0::2] = rgb[..., 2]
+    raw[1::2, 1::2] = rgb[..., 1]
+    return raw.tobytes()
 
 
 def imaging_client(conn, addr, payload, args):
@@ -56,7 +88,11 @@ def imaging_client(conn, addr, payload, args):
 
 
 def serve_imaging(args):
-    payload = open(FRAME, "rb").read()
+    if args.image:
+        payload = mosaic_from_image(args.image)
+        print(f"faux Seestar : rejoue {os.path.basename(args.image)}", flush=True)
+    else:
+        payload = open(FRAME, "rb").read()
     srv = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     srv.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     srv.bind(("0.0.0.0", 4800))
@@ -98,6 +134,7 @@ def serve_events():
 
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument("--image")
     parser.add_argument("--refuse", action="store_true")
     parser.add_argument("--coupe-apres", type=int, default=0)
     args = parser.parse_args()
