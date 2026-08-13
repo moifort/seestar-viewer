@@ -17,7 +17,7 @@
 | Classification d'âge | 4+ |
 | Prix | Gratuit |
 | URL d'assistance | https://github.com/moifort/seestar-viewer |
-| URL de confidentialité | https://moifort.github.io/seestar-viewer/privacy |
+| URL de confidentialité | https://moifort.github.io/seestar-viewer/privacy/ |
 | Collecte de données | Aucune |
 
 **Point d'attention pour la revue.** La mention de non-affiliation figure dès la
