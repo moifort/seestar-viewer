@@ -109,11 +109,28 @@ def compose(front: Image.Image, sky: Image.Image, width: int, height: int,
     return canvas.convert("RGB")
 
 
-def imageset(path, image, idiom="tv", scale="1x"):
+SCALES = (1, 2)
+
+
+def both_scales(render):
+    """Rend une image a chaque echelle attendue.
+
+    Les deux sont obligatoires : App Store Connect refuse un catalogue tvOS
+    qui n'offre que le 1x, couche par couche (erreur 90709), l'Apple TV 4K
+    affichant les icones au double de leur taille nominale.
+    """
+    return [(scale, render(scale)) for scale in SCALES]
+
+
+def imageset(path, renders, idiom="tv"):
     fresh(path)
-    image.save(os.path.join(path, "image.png"))
+    images = []
+    for scale, image in renders:
+        filename = "image.png" if scale == 1 else f"image@{scale}x.png"
+        image.save(os.path.join(path, filename))
+        images.append({"filename": filename, "idiom": idiom, "scale": f"{scale}x"})
     write_json(os.path.join(path, "Contents.json"), {
-        "images": [{"filename": "image.png", "idiom": idiom, "scale": scale}],
+        "images": images,
         "info": INFO,
     })
 
@@ -122,10 +139,10 @@ def imagestack(path, layers):
     """Une pile de couches : la premiere est au premier plan."""
     fresh(path)
     names = []
-    for name, image in layers:
+    for name, renders in layers:
         layer_dir = fresh(os.path.join(path, f"{name}.imagestacklayer"))
         write_json(os.path.join(layer_dir, "Contents.json"), {"info": INFO})
-        imageset(os.path.join(layer_dir, "Content.imageset"), image)
+        imageset(os.path.join(layer_dir, "Content.imageset"), renders)
         names.append({"filename": f"{name}.imagestacklayer"})
     write_json(os.path.join(path, "Contents.json"), {"layers": names, "info": INFO})
 
@@ -178,25 +195,33 @@ def build_tvos(front, sky, banner=None):
     # Les deux tailles d'icone, chacune en deux plans.
     for name, (w, h) in {"App Icon": (400, 240),
                          "App Icon - App Store": (1280, 768)}.items():
-        back = sky_canvas(sky, w, h).convert("RGB")
-        # Le plan avant garde sa transparence : c'est elle qui laisse voir le
-        # ciel glisser dessous pendant le parallaxe.
-        transparent = Image.new("RGBA", (w, h), (0, 0, 0, 0))
-        target = int(min(w, h) * 0.78)
-        transparent.alpha_composite(front.resize((target, target), Image.LANCZOS),
-                                    ((w - target) // 2, (h - target) // 2))
+        def back(scale, w=w, h=h):
+            return sky_canvas(sky, w * scale, h * scale).convert("RGB")
+
+        def plane(scale, w=w, h=h):
+            # Le plan avant garde sa transparence : c'est elle qui laisse voir
+            # le ciel glisser dessous pendant le parallaxe.
+            width, height = w * scale, h * scale
+            transparent = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+            target = int(min(width, height) * 0.78)
+            transparent.alpha_composite(
+                front.resize((target, target), Image.LANCZOS),
+                ((width - target) // 2, (height - target) // 2))
+            return transparent
+
         imagestack(os.path.join(brand, f"{name}.imagestack"),
-                   [("Front", transparent), ("Back", back)])
-        print(f"tvOS : {name} {w}x{h}, 2 couches")
+                   [("Front", both_scales(plane)), ("Back", both_scales(back))])
+        print(f"tvOS : {name} {w}x{h}, 2 couches, 1x et 2x")
 
     for name, (w, h) in {"Top Shelf Image": (1920, 720),
                          "Top Shelf Image Wide": (2320, 720)}.items():
-        if banner is not None:
-            image = banner_canvas(banner, w, h)
-        else:
-            image = compose(front, sky, w, h, 0.55)
-        imageset(os.path.join(brand, f"{name}.imageset"), image)
-        print(f"tvOS : {name} {w}x{h}")
+        def shelf(scale, w=w, h=h):
+            if banner is not None:
+                return banner_canvas(banner, w * scale, h * scale)
+            return compose(front, sky, w * scale, h * scale, 0.55)
+
+        imageset(os.path.join(brand, f"{name}.imageset"), both_scales(shelf))
+        print(f"tvOS : {name} {w}x{h}, 1x et 2x")
 
     write_json(os.path.join(brand, "Contents.json"), {
         "assets": [
