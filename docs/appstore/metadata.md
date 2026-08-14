@@ -16,12 +16,12 @@
 | Langues supplémentaires | Français |
 | Catégorie principale | Photo et vidéo |
 | Catégorie secondaire | Éducation |
-| Classification d'âge | 4+ |
+| Classification d'âge | 4+ — questionnaire rempli, 172 pays |
 | Prix | Gratuit — 0,00 appliqué aux 175 pays et régions |
 | Disponibilité | Tous les pays et régions, à la publication |
 | URL d'assistance | https://github.com/moifort/seestar-viewer |
 | URL de confidentialité | https://moifort.github.io/seestar-viewer/privacy/ |
-| Collecte de données | Aucune |
+| Collecte de données | Aucune — étiquettes publiées |
 
 **Point d'attention pour la revue.** La mention de non-affiliation figure dès la
 deuxième ligne de la description, dans les deux langues. C'est le premier
@@ -29,9 +29,15 @@ deuxième ligne de la description, dans les deux langues. C'est le premier
 
 ## Reste à faire avant de soumettre
 
-- Le questionnaire de classification d'âge et les étiquettes de confidentialité.
 - Les coordonnées du contact de vérification : nom, téléphone, e-mail.
-- L'archive Release à charger.
+- Les trois secrets GitHub qui font marcher `release.yml` : `ASC_KEY_ID`,
+  `ASC_ISSUER_ID`, `ASC_KEY_P8`. Le binaire part ensuite sur un tag `v*`.
+
+Le questionnaire de classification d'âge est rempli — sept étapes, toutes à
+« Aucun » ou « Non », d'où le 4+ dans 172 pays, avec les équivalents régionaux
+AL au Brésil, TOUS en Corée du Sud et 00+ au Vietnam. Les étiquettes de
+confidentialité sont publiées : « Données non collectées ». Publier ces
+réponses ne publie pas l'app, les deux versions restent à finaliser.
 
 « Connexion requise » était cochée sur iOS comme sur tvOS, avec identifiant et
 mot de passe vides — l'app n'a aucune authentification. Décochée le 14 août
