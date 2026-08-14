@@ -17,6 +17,13 @@ packages:
 settings:
   base:
     SWIFT_VERSION: "6.0"
+    # Les Info.plist ne portent plus que ces deux références : les valeurs
+    # ci-dessous servent aux compilations locales, et la chaîne de publication
+    # les remplace par la version du tag et le nombre de commits. Sans cela,
+    # tout envoi repartait avec le build 1 et App Store Connect refusait le
+    # second, qui doit toujours porter un numéro plus grand que le précédent.
+    MARKETING_VERSION: "1.0"
+    CURRENT_PROJECT_VERSION: "1"
     # Signature automatique : nécessaire pour installer sur un vrai Apple TV.
     # En simulateur elle est simplement ignorée.
     DEVELOPMENT_TEAM: 46C337T7YN
@@ -42,6 +49,13 @@ targets:
       path: Apps/SeestarTV/Info.plist
       properties:
         CFBundleDisplayName: Seestar Companion
+        # Les deux numéros viennent des réglages de compilation : la
+        # chaîne de publication y met la version du tag et le nombre de
+        # commits. Figés ici, tout envoi repartait avec le build 1 et
+        # App Store Connect refusait le second, qui doit toujours porter
+        # un numéro plus grand que le précédent.
+        CFBundleShortVersionString: "$(MARKETING_VERSION)"
+        CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
         # Sans cette autorisation, toute connexion au réseau local échoue
         # silencieusement : le télescope semble simplement injoignable.
         NSLocalNetworkUsageDescription: >-
@@ -72,6 +86,13 @@ targets:
       path: Apps/SeestarViewer/Info.plist
       properties:
         CFBundleDisplayName: Seestar Companion
+        # Les deux numéros viennent des réglages de compilation : la
+        # chaîne de publication y met la version du tag et le nombre de
+        # commits. Figés ici, tout envoi repartait avec le build 1 et
+        # App Store Connect refusait le second, qui doit toujours porter
+        # un numéro plus grand que le précédent.
+        CFBundleShortVersionString: "$(MARKETING_VERSION)"
+        CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
         NSLocalNetworkUsageDescription: >-
           Seestar Companion connects to your telescope on the local network
           to display its images.
