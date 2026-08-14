@@ -14,6 +14,11 @@ struct VLCStreamView: UIViewRepresentable {
     func makeUIView(context: Context) -> UIView {
         let view = UIView()
         view.backgroundColor = .black
+        // VLCKit installe ses propres gestes sur la vue de rendu : un toucher
+        // y met le flux en pause, et n'atteint jamais l'écran qui, lui, veut
+        // s'en servir pour montrer et masquer la barre. On coupe donc toute
+        // interaction ici : le lecteur affiche, il ne commande pas.
+        view.isUserInteractionEnabled = false
         context.coordinator.start(streaming: url, into: view)
         return view
     }

@@ -93,6 +93,18 @@ public struct ViewerScreen<RTSPPlayer: View>: View {
             }
         }
         #if !os(tvOS)
+        // L'heure et le niveau de batterie du téléphone n'ont rien à faire
+        // par-dessus le ciel : la barre de l'application les donne déjà, et
+        // elle, on peut la masquer. Le module se compile aussi pour macOS,
+        // où cette barre n'existe pas.
+        #if os(iOS)
+        .statusBarHidden(true)
+        #endif
+        // Le doigt posé sur l'écran montre et masque la barre, comme la flèche
+        // du haut sur le téléviseur. `contentShape` est indispensable : sans
+        // elle, la pile ne réagit qu'aux endroits où quelque chose est dessiné.
+        .contentShape(Rectangle())
+        .onTapGesture { showsOverlay.toggle() }
         .onLongPressGesture { showsSettings = true }
         .sheet(isPresented: $showsSettings) {
             SettingsView(session: session)
