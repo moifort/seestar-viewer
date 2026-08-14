@@ -7,7 +7,13 @@ import SwiftUI
 /// imperceptible à l'œil, et assez ample pour répartir la charge des pixels.
 struct AntiBurnInDrift: ViewModifier {
     /// Amplitude en points, de part et d'autre de la position centrale.
-    var amplitude: CGFloat = 8
+    ///
+    /// Publique au module : une image censée toucher les bords doit être
+    /// agrandie d'autant, faute de quoi la dérive découvrirait une bande noire
+    /// à chaque oscillation.
+    static let defaultAmplitude: CGFloat = 8
+
+    var amplitude: CGFloat = Self.defaultAmplitude
     /// Durée d'un aller-retour complet.
     var period: TimeInterval = 240
 

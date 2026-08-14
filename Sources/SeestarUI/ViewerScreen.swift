@@ -41,9 +41,20 @@ public struct ViewerScreen<RTSPPlayer: View>: View {
                 // Modes Paysage et Système solaire : l'image ne passe que par là.
                 // Le flux est en portrait 1080x1920 comme le capteur, il suit
                 // donc la même règle d'orientation que les trames décodées.
-                PortraitFitted { rtspPlayer(stream) }
-                    .antiBurnInDrift()
-                    .transition(.opacity)
+                switch PortraitFit.platformPolicy {
+                case .fillWideScreen:
+                    PortraitFitted { rtspPlayer(stream) }
+                        .antiBurnInDrift()
+                        .transition(.opacity)
+                case .alwaysUpright:
+                    // Le téléphone est plus élancé que le 9/16 du capteur :
+                    // à hauteur égale il resterait deux bandes noires sur les
+                    // côtés. On agrandit jusqu'aux bords, quitte à rogner un
+                    // peu de champ — c'est le direct qu'on regarde, pas une
+                    // pose qu'on cadre.
+                    FullBleedStream { rtspPlayer(stream) }
+                        .transition(.opacity)
+                }
             } else {
                 WaitingView(status: session.model.status)
             }
