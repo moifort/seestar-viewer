@@ -59,8 +59,14 @@ def split_layers(source: Image.Image):
 
     # On retient celle qui detache une part plausible de l'image : un masque
     # quasi vide ou quasi plein signale que le critere ne s'applique pas ici.
+    #
+    # Le plancher doit rester bas. Une constellation n'occupe que 1,25 % de
+    # l'icone : avec un plancher a 6 %, le contraste etait ecarte alors qu'il
+    # isolait exactement les etoiles, et la teinte prenait le relais en
+    # selectionnant le degrade du ciel. Le plan avant devenait une plaque
+    # semi-transparente, que tvOS ombrait pendant le parallaxe.
     def plausible(mask):
-        return 0.06 <= (mask > 0.5).mean() <= 0.65
+        return 0.005 <= (mask > 0.5).mean() <= 0.65
 
     alpha = by_contrast if plausible(by_contrast) else (
         by_hue if plausible(by_hue) else np.maximum(by_contrast, by_hue))
@@ -68,6 +74,14 @@ def split_layers(source: Image.Image):
     alpha = np.asarray(
         Image.fromarray((alpha * 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(3))
     ).astype(np.float32) / 255
+
+    # Un voile de quelques pourcents subsiste sur toute la zone du sujet.
+    # Invisible a l'oeil, il suffit a faire porter une ombre carree par tvOS
+    # pendant le parallaxe : l'ombre vient de l'alpha, pas de la couleur. On
+    # soustrait donc ce plancher, en reetalant ce qui reste pour ne pas
+    # eteindre les halos.
+    floor = 0.05
+    alpha = np.clip((alpha - floor) / (1 - floor), 0, 1)
 
     front = np.dstack([rgb, alpha * 255]).astype(np.uint8)
     sky = source.convert("RGB").filter(ImageFilter.GaussianBlur(radius))
@@ -161,7 +175,6 @@ def build_tvos(front, sky, banner=None):
     for name, (w, h) in {"App Icon": (400, 240),
                          "App Icon - App Store": (1280, 768)}.items():
         back = sky_canvas(sky, w, h).convert("RGB")
-        front_layer = compose(front, sky, w, h, 0.78)
         # Le plan avant garde sa transparence : c'est elle qui laisse voir le
         # ciel glisser dessous pendant le parallaxe.
         transparent = Image.new("RGBA", (w, h), (0, 0, 0, 0))
@@ -170,7 +183,6 @@ def build_tvos(front, sky, banner=None):
                                     ((w - target) // 2, (h - target) // 2))
         imagestack(os.path.join(brand, f"{name}.imagestack"),
                    [("Front", transparent), ("Back", back)])
-        del front_layer
         print(f"tvOS : {name} {w}x{h}, 2 couches")
 
     for name, (w, h) in {"Top Shelf Image": (1920, 720),
