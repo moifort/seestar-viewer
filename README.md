@@ -39,6 +39,38 @@ Aucun test n'ouvre de socket : les analyseurs sont alimentés par les trames
 réelles capturées dans `fixtures/`. Le test de parité vérifie que le décodage
 Swift produit les mêmes pixels que l'oracle Python `decode_frame.py`.
 
+## Publication
+
+Un tag publie les deux plateformes ensemble, puisqu'une seule fiche App Store
+les porte :
+
+```bash
+git tag v1.0 && git push --tags
+```
+
+`.github/workflows/release.yml` lance la suite de tests, régénère le projet avec
+XcodeGen — `Seestar.xcodeproj` est gitignoré —, archive iOS puis tvOS, et envoie
+les deux binaires à App Store Connect. La version affichée vient du tag, le
+numéro de build du nombre de commits : il croît sans jamais reculer et ne
+demande aucun état.
+
+Trois secrets sont nécessaires, tous issus d'une clé API App Store Connect de
+rôle App Manager :
+
+| Secret | Contenu |
+|---|---|
+| `ASC_KEY_ID` | l'identifiant de la clé, dix caractères |
+| `ASC_ISSUER_ID` | l'identifiant d'émetteur, un UUID |
+| `ASC_KEY_P8` | le contenu du fichier `.p8`, tel quel |
+
+La signature reste automatique : `-allowProvisioningUpdates` laisse Xcode créer
+certificat et profil via cette même clé, ce qui évite de stocker un `.p12`. Si
+l'endpoint de provisionnement se met à répondre 401, il faudra basculer sur une
+signature manuelle avec certificat importé.
+
+`workflow_dispatch` permet un essai à blanc : `skip_upload` archive et exporte
+sans rien envoyer, et le `.ipa` reste récupérable en artefact.
+
 ## Protocole, tel que mesuré
 
 | Port | Rôle | Authentification |
