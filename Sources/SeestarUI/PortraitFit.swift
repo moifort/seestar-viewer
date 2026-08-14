@@ -39,24 +39,30 @@ public enum PortraitFit {
     }
 }
 
-/// Étire le flux vidéo jusqu'aux bords de l'écran, quitte à en rogner les
-/// côtés.
+/// Étire l'image jusqu'aux bords de l'écran, quitte à en rogner les côtés.
 ///
-/// Le téléphone est plus élancé que le capteur : à hauteur égale, le flux
-/// laisserait deux bandes noires. Sur un écran entièrement noir, l'image
-/// paraît alors flotter en timbre-poste.
-struct FullBleedStream<Content: View>: View {
+/// Le téléphone est plus élancé que le capteur : à hauteur égale, l'image
+/// laisserait deux bandes noires. Sur un écran entièrement noir, elle paraît
+/// alors flotter en timbre-poste.
+struct FullBleed<Content: View>: View {
+    /// Proportions de ce qu'on affiche, largeur sur hauteur.
+    ///
+    /// Il faut les donner explicitement : la vue de VLCKit n'a pas de taille
+    /// naturelle, elle inscrit simplement le flux dans le cadre qu'on lui
+    /// laisse. Donner à ce cadre les proportions du flux suffit à le remplir.
+    var aspectRatio: CGFloat = sensorAspectRatio
+
     @ViewBuilder var content: Content
 
     /// Le capteur filme en 1080x1920, et le zoom x2 en 536x960 : toujours du
-    /// 9/16. VLCKit inscrit l'image dans sa vue en respectant les proportions
-    /// du flux, donner ces proportions à la vue suffit donc à la remplir.
-    private static var aspectRatio: CGFloat { 9.0 / 16.0 }
+    /// 9/16. C'est aussi le format des trames empilées, mais celles-ci portent
+    /// leurs dimensions, autant les lire plutôt que les supposer.
+    static var sensorAspectRatio: CGFloat { 9.0 / 16.0 }
 
     var body: some View {
         GeometryReader { geometry in
             content
-                .aspectRatio(Self.aspectRatio, contentMode: .fill)
+                .aspectRatio(aspectRatio, contentMode: .fill)
                 // Le débord couvre la dérive anti-rémanence : sans lui, elle
                 // découvrirait une bande noire au bord à chaque oscillation.
                 .frame(

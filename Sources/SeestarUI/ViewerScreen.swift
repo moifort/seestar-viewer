@@ -30,13 +30,25 @@ public struct ViewerScreen<RTSPPlayer: View>: View {
             Color.black
 
             if let frame = session.model.displayedFrame {
-                PortraitFitted {
-                    Image(decorative: frame.image, scale: 1)
-                        .resizable()
-                        .scaledToFit()
+                switch PortraitFit.platformPolicy {
+                case .fillWideScreen:
+                    PortraitFitted {
+                        Image(decorative: frame.image, scale: 1)
+                            .resizable()
+                            .scaledToFit()
+                    }
+                    .antiBurnInDrift()
+                    .transition(.opacity)
+                case .alwaysUpright:
+                    // Comme le flux vidéo : jusqu'aux bords. Les proportions
+                    // viennent de la trame elle-même, le zoom du télescope
+                    // changeant ses dimensions en cours de session.
+                    FullBleed(aspectRatio: CGFloat(frame.width) / CGFloat(frame.height)) {
+                        Image(decorative: frame.image, scale: 1)
+                            .resizable()
+                    }
+                    .transition(.opacity)
                 }
-                .antiBurnInDrift()
-                .transition(.opacity)
             } else if let stream = session.rtspStreamURL {
                 // Modes Paysage et Système solaire : l'image ne passe que par là.
                 // Le flux est en portrait 1080x1920 comme le capteur, il suit
@@ -52,7 +64,7 @@ public struct ViewerScreen<RTSPPlayer: View>: View {
                     // côtés. On agrandit jusqu'aux bords, quitte à rogner un
                     // peu de champ — c'est le direct qu'on regarde, pas une
                     // pose qu'on cadre.
-                    FullBleedStream { rtspPlayer(stream) }
+                    FullBleed { rtspPlayer(stream) }
                         .transition(.opacity)
                 }
             } else {
