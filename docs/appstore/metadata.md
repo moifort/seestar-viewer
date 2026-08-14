@@ -1,6 +1,8 @@
 # Fiche App Store — Seestar Companion
 
-> **À relire avant saisie.** Rien n'a encore été enregistré dans App Store Connect.
+> **Saisi et vérifié dans App Store Connect** le 14 août 2026, champ par champ,
+> sur les deux plateformes et dans les deux langues. Aucun écart avec ce
+> document. Rien n'est soumis à la vérification d'Apple.
 > Les compteurs entre parenthèses indiquent la limite imposée par Apple.
 
 ## Paramètres généraux
@@ -15,7 +17,8 @@
 | Catégorie principale | Photo et vidéo |
 | Catégorie secondaire | Éducation |
 | Classification d'âge | 4+ |
-| Prix | Gratuit |
+| Prix | Gratuit — 0,00 appliqué aux 175 pays et régions |
+| Disponibilité | Tous les pays et régions, à la publication |
 | URL d'assistance | https://github.com/moifort/seestar-viewer |
 | URL de confidentialité | https://moifort.github.io/seestar-viewer/privacy/ |
 | Collecte de données | Aucune |
@@ -23,6 +26,16 @@
 **Point d'attention pour la revue.** La mention de non-affiliation figure dès la
 deuxième ligne de la description, dans les deux langues. C'est le premier
 élément que regardera le vérificateur, la marque Seestar appartenant à ZWO.
+
+## Reste à faire avant de soumettre
+
+- Le questionnaire de classification d'âge et les étiquettes de confidentialité.
+- Les coordonnées du contact de vérification : nom, téléphone, e-mail.
+- L'archive Release à charger.
+
+« Connexion requise » était cochée sur iOS comme sur tvOS, avec identifiant et
+mot de passe vides — l'app n'a aucune authentification. Décochée le 14 août
+2026 : laissée en l'état, elle aurait bloqué la soumission.
 
 ---
 
@@ -121,9 +134,19 @@ Première version.
 
 | Appareil | Taille exigée | État |
 |---|---|---|
-| Apple TV | 3840×2160 | l'éclipse partielle capturée sur le matériel |
-| iPhone 6,9" | 1320×2868 | `screenshots/iphone-69-{en,fr}.png` |
-| iPad 13" | 2064×2752 | `screenshots/ipad-13-{en,fr}.png` |
+| Apple TV | 3840×2160 | `screenshots/appletv-{1,2}.png`, chargées |
+| iPhone 6,9" | 1320×2868 | `screenshots/iphone-69-{en,fr}.png`, chargées |
+| iPad 13" | 2064×2752 | `screenshots/ipad-13-{en,fr}.png`, chargées |
+
+Les deux captures Apple TV sont les vraies, prises sur le téléviseur pendant
+l'éclipse du 12 août : le croissant épais et doré, puis le croissant fin proche
+du maximum. Elles dormaient dans `/tmp`, que Spotlight n'indexe pas — d'où leur
+disparition apparente. `appletv-2.png` a été aplatie, elle portait un canal
+alpha qu'Apple refuse.
+
+Le 6,5" hérite automatiquement du 6,9", et le français n'hérite de l'anglais
+que tant qu'on ne charge pas ses propres visuels. Les captures Apple TV
+n'existent qu'en anglais : la version française héritera des mêmes.
 
 Les captures iPhone et iPad sont prises face au faux télescope, par
 `Tools/make_screenshots.sh`. Les trois trames enregistrées étant brûlées —
