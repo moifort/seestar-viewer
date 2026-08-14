@@ -14,36 +14,45 @@ struct TelemetryOverlay: View {
     @State private var location = ObserverLocation()
 
     var body: some View {
-        VStack {
-            Spacer()
-            // La minute est la plus petite unité qui compte ici : une horloge
-            // à la seconde ferait clignoter la barre toute la nuit.
-            TimelineView(.everyMinute) { context in
-                HStack(spacing: 22) {
-                    item(statusSymbol, statusText)
-                    if let target = telemetry.target {
-                        item("scope", target)
+        GeometryReader { geometry in
+            VStack {
+                Spacer()
+                // La minute est la plus petite unité qui compte ici : une
+                // horloge à la seconde ferait clignoter la barre toute la nuit.
+                TimelineView(.everyMinute) { context in
+                    FlowLayout(spacing: 22, lineSpacing: 10) {
+                        item(statusSymbol, statusText)
+                        if let target = telemetry.target {
+                            item("scope", target)
+                        }
+                        if let battery = telemetry.batteryCapacity {
+                            // Le style `.percent` place le signe comme l'exige
+                            // la langue : collé en anglais, précédé d'une
+                            // espace en français.
+                            item(batterySymbol(battery), battery.formatted(.percent))
+                        }
+                        if let temperature = telemetry.temperature {
+                            item("thermometer.medium", String(format: "%.0f°C", temperature))
+                        }
+                        skyItems(now: context.date)
+                        item("clock", time(context.date))
                     }
-                    if let battery = telemetry.batteryCapacity {
-                        // Le style `.percent` place le signe comme l'exige la
-                        // langue : collé en anglais, précédé d'une espace en
-                        // français.
-                        item(batterySymbol(battery), battery.formatted(.percent))
-                    }
-                    if let temperature = telemetry.temperature {
-                        item("thermometer.medium", String(format: "%.0f°C", temperature))
-                    }
-                    skyItems(now: context.date)
-                    item("clock", time(context.date))
                 }
+                .font(.caption)
+                .foregroundStyle(.white.opacity(0.85))
+                .padding(.horizontal, 18)
+                .padding(.vertical, 10)
+                // Un coin arrondi plutôt qu'une gélule : sur deux lignes, la
+                // gélule prendrait des flancs en demi-cercle démesurés.
+                .background(.black.opacity(0.45), in: .rect(cornerRadius: 19, style: .continuous))
+                // La barre ne dépasse jamais 90 % de la largeur : sur iPhone
+                // elle touchait les bords, et il faut de la marge pour la
+                // dérive anti-rémanence.
+                .padding(.horizontal, geometry.size.width * 0.05)
+                .padding(.bottom, 40)
+                .antiBurnInDrift()
             }
-            .font(.caption)
-            .foregroundStyle(.white.opacity(0.85))
-            .padding(.horizontal, 18)
-            .padding(.vertical, 10)
-            .background(.black.opacity(0.45), in: Capsule())
-            .padding(.bottom, 40)
-            .antiBurnInDrift()
+            .frame(width: geometry.size.width, height: geometry.size.height)
         }
         .opacity(isVisible ? 1 : 0)
         .animation(.easeInOut(duration: 0.35), value: isVisible)
