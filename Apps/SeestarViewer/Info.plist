@@ -20,6 +20,8 @@
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>Seestar Companion connects to your telescope on the local network to display its images.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>

@@ -54,6 +54,11 @@ targets:
         # commits. Figés ici, tout envoi repartait avec le build 1 et
         # App Store Connect refusait le second, qui doit toujours porter
         # un numéro plus grand que le précédent.
+        # L'app ne chiffre rien : tout passe en TCP nu vers le télescope,
+        # et le flux vidéo en RTSP sans TLS. Le déclarer ici plutôt que
+        # dans App Store Connect évite d'avoir à répondre à la main, envoi
+        # après envoi, ce qui bloquerait la publication automatique.
+        ITSAppUsesNonExemptEncryption: false
         CFBundleShortVersionString: "$(MARKETING_VERSION)"
         CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
         # Sans cette autorisation, toute connexion au réseau local échoue
@@ -91,6 +96,11 @@ targets:
         # commits. Figés ici, tout envoi repartait avec le build 1 et
         # App Store Connect refusait le second, qui doit toujours porter
         # un numéro plus grand que le précédent.
+        # L'app ne chiffre rien : tout passe en TCP nu vers le télescope,
+        # et le flux vidéo en RTSP sans TLS. Le déclarer ici plutôt que
+        # dans App Store Connect évite d'avoir à répondre à la main, envoi
+        # après envoi, ce qui bloquerait la publication automatique.
+        ITSAppUsesNonExemptEncryption: false
         CFBundleShortVersionString: "$(MARKETING_VERSION)"
         CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
         NSLocalNetworkUsageDescription: >-
