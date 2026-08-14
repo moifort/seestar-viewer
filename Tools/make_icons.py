@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Fabrique les catalogues d'icones iOS et tvOS a partir d'une seule image source.
 
-    python3 Tools/make_icons.py Tools/icon-source.png [Tools/banner-source.png]
+    python3 Tools/make_icons.py Tools/icon-source.png [Tools/nebula-source.png]
 
 iOS se contente d'un carre de 1024. tvOS est plus exigeant : il veut du 5:3,
 decompose en couches superposees pour l'effet de parallaxe, plus une banniere
@@ -16,7 +16,7 @@ import shutil
 import sys
 
 import numpy as np
-from PIL import Image, ImageFilter
+from PIL import Image, ImageEnhance, ImageFilter
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 INFO = {"author": "xcode", "version": 1}
@@ -33,7 +33,7 @@ def fresh(path):
     return path
 
 
-def split_layers(source: Image.Image):
+def split_layers(source: Image.Image, floor: float = 0.05):
     """Separe le sujet du ciel, par ecart au fond estime.
 
     Un simple seuil de luminance ne marche que pour un sujet nettement plus
@@ -79,8 +79,9 @@ def split_layers(source: Image.Image):
     # Invisible a l'oeil, il suffit a faire porter une ombre carree par tvOS
     # pendant le parallaxe : l'ombre vient de l'alpha, pas de la couleur. On
     # soustrait donc ce plancher, en reetalant ce qui reste pour ne pas
-    # eteindre les halos.
-    floor = 0.05
+    # eteindre les halos. Sur un fond d'ecran, ou le sujet est pose sur un ciel
+    # d'une autre teinte que le sien, le meme voile dessine un carre : il y faut
+    # un plancher plus haut.
     alpha = np.clip((alpha - floor) / (1 - floor), 0, 1)
 
     front = np.dstack([rgb, alpha * 255]).astype(np.uint8)
@@ -144,26 +145,29 @@ def build_ios(front, sky, source):
 
 
 def banner_canvas(source: Image.Image, width: int, height: int) -> Image.Image:
-    """Pose une image carree au centre d'une banniere large.
+    """Ajuste l'image d'accueil aux formats de l'etagere du haut.
 
-    Un simple recadrage amputerait les extremites de la nebuleuse, qui sont
-    justement ce qui la rend reconnaissable. On l'ajuste donc en hauteur et on
-    laisse le ciel occuper les cotes.
+    Une image deja large est un fond d'ecran : elle se recadre, sans plus. Une
+    image carree, elle, doit etre etendue, et la coller telle quelle laisserait
+    voir son carre puisque son ciel n'a pas la teinte du fond. On la detoure
+    alors comme pour l'icone, et on l'expose sur son propre ciel etire.
     """
-    sky = source.convert("RGB").filter(ImageFilter.GaussianBlur(120))
-    canvas = sky_canvas(sky, width, height)
+    if source.width / source.height >= 2:
+        return sky_canvas(source, width, height)
 
-    target = int(height * 0.96)
-    subject = source.convert("RGB").resize((target, target), Image.LANCZOS)
+    front, sky = split_layers(source, floor=0.12)
 
-    # Fondu circulaire sur les bords du sujet, pour qu'il se marie au ciel.
-    mask = Image.new("L", (target, target), 0)
-    inner = Image.new("L", (target, target), 255)
-    mask.paste(inner, (0, 0))
-    mask = mask.filter(ImageFilter.GaussianBlur(target // 12))
+    # Le ciel etire sert de decor : assombri, il laisse le sujet ressortir et
+    # garde le fond assez sombre pour le texte que tvOS pose par-dessus.
+    canvas = ImageEnhance.Brightness(sky_canvas(sky, width, height)).enhance(0.62)
+    canvas = canvas.convert("RGBA")
 
-    canvas.paste(subject, ((width - target) // 2, (height - target) // 2), mask)
-    return canvas
+    # Le sujet deborde legerement en hauteur : ses pointes sont diagonales, donc
+    # loin des bords, et le cadre parait mieux rempli.
+    target = int(height * 1.05)
+    canvas.alpha_composite(front.resize((target, target), Image.LANCZOS),
+                           ((width - target) // 2, (height - target) // 2))
+    return canvas.convert("RGB")
 
 
 def build_tvos(front, sky, banner=None):
