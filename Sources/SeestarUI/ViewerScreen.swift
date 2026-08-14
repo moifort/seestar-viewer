@@ -110,6 +110,11 @@ public struct ViewerScreen<RTSPPlayer: View>: View {
 
 /// Écran d'attente. Le message `only available for continuous exposure` n'est
 /// pas une erreur : le télescope est joignable, il n'expose simplement pas.
+///
+/// Les teintes sont écrites en blanc plutôt qu'en `.primary` et `.secondary` :
+/// sur iOS, un téléphone réglé en thème clair rendait ces couleurs sémantiques
+/// en noir, donc invisibles sur le fond noir de l'écran. Le fond ne dépend pas
+/// du thème, le texte ne doit pas en dépendre non plus.
 struct WaitingView: View {
     let status: ViewerStatus
 
@@ -117,13 +122,13 @@ struct WaitingView: View {
         VStack(spacing: 16) {
             Image(systemName: symbol)
                 .font(.system(size: 64, weight: .thin))
-                .foregroundStyle(.secondary)
+                .foregroundStyle(.white.opacity(0.55))
             Text(title)
                 .font(.title2)
-                .foregroundStyle(.primary)
+                .foregroundStyle(.white)
             Text(detail)
                 .font(.callout)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(.white.opacity(0.7))
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: 480)
         }
